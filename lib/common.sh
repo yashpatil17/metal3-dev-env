@@ -87,11 +87,11 @@ export RUN_LOCAL_IRONIC_SCRIPT="${BMOPATH}/tools/run_local_ironic.sh"
 
 export CAPM3PATH="${CAPM3PATH:-${M3PATH}/cluster-api-provider-metal3}"
 export CAPM3_BASE_URL="${CAPM3_BASE_URL:-metal3-io/cluster-api-provider-metal3}"
-export CAPM3REPO="${CAPM3REPO:-https://github.com/${CAPM3_BASE_URL}}"
+export CAPM3REPO="${CAPM3REPO:-https://github.com/shweta50/cluster-api-provider-metal3}"
 
 export IPAMPATH="${IPAMPATH:-${M3PATH}/ip-address-manager}"
 export IPAM_BASE_URL="${IPAM_BASE_URL:-metal3-io/ip-address-manager}"
-export IPAMREPO="${IPAMREPO:-https://github.com/${IPAM_BASE_URL}}"
+export IPAMREPO="${IPAMREPO:-https://github.com/shweta50/ip-address-manager}"
 
 if [ "${CAPI_VERSION}" == "v1alpha3" ]; then
   IPAMBRANCH="${IPAMBRANCH:-release-0.0}"
@@ -169,8 +169,8 @@ if [ "${CAPM3_VERSION}" == "v1alpha4" ]; then
   export CAPM3_IMAGE=${CAPM3_IMAGE:-"quay.io/metal3-io/cluster-api-provider-metal3:release-0.4"}
   export IPAM_IMAGE=${IPAM_IMAGE:-"quay.io/metal3-io/ip-address-manager:release-0.0"}
 else
-  export CAPM3_IMAGE=${CAPM3_IMAGE:-"quay.io/metal3-io/cluster-api-provider-metal3:master"}
-  export IPAM_IMAGE=${IPAM_IMAGE:-"quay.io/metal3-io/ip-address-manager:master"}
+  export CAPM3_IMAGE=${CAPM3_IMAGE:-"quay.io/shweta50/cluster-api-provider-metal3:master"}
+  export IPAM_IMAGE=${IPAM_IMAGE:-"quay.io/shweta50/ip-address-manager:master"}
 fi
 
 # Default hosts memory
