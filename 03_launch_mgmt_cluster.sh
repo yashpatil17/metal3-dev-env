@@ -59,31 +59,8 @@ function clone_repos() {
 # BMO and Ironic deployment functions
 # ------------------------------------
 
-#
-# Modifies the images to use the ones built locally in the kustomization
-# This is v1a3 specific for BMO, all versions for Ironic
-#
-function update_kustomization_images(){
-  FILE_PATH=$1
-  for IMAGE_VAR in $(env | grep "_LOCAL_IMAGE=" | grep -o "^[^=]*") ; do
-    IMAGE=${!IMAGE_VAR}
-    #shellcheck disable=SC2086
-    IMAGE_NAME="${IMAGE##*/}"
-    LOCAL_IMAGE="${REGISTRY}/localimages/$IMAGE_NAME"
-    OLD_IMAGE_VAR="${IMAGE_VAR%_LOCAL_IMAGE}_IMAGE"
-    # Strip the tag for image replacement
-    OLD_IMAGE="${!OLD_IMAGE_VAR%:*}"
-    sed -i -E "s $OLD_IMAGE$ $LOCAL_IMAGE g" "$FILE_PATH"
-  done
-  # Assign images from local image registry for kustomization
-  for IMAGE_VAR in $(env | grep -v "_LOCAL_IMAGE=" | grep "_IMAGE=" | grep -o "^[^=]*") ; do
-    IMAGE=${!IMAGE_VAR}
-    #shellcheck disable=SC2086
-    IMAGE_NAME="${IMAGE##*/}"
-    LOCAL_IMAGE="${REGISTRY}/localimages/$IMAGE_NAME"
-    sed -i -E "s $IMAGE$ $LOCAL_IMAGE g" "$FILE_PATH"
-  done
-}
+
+
 
 #
 # Create the BMO deployment (used for v1a4 only)
@@ -144,36 +121,11 @@ EOF
   popd
 }
 
-#
-# Modifies the images to use the ones built locally
-# Updates the environment variables to refer to the images
-# pushed to the local registry for caching.
-#
-function update_images(){
-  for IMAGE_VAR in $(env | grep "_LOCAL_IMAGE=" | grep -o "^[^=]*") ; do
-    IMAGE=${!IMAGE_VAR}
-    #shellcheck disable=SC2086
-    IMAGE_NAME="${IMAGE##*/}"
-    LOCAL_IMAGE="${REGISTRY}/localimages/$IMAGE_NAME"
-    OLD_IMAGE_VAR="${IMAGE_VAR%_LOCAL_IMAGE}_IMAGE"
-    # Strip the tag for image replacement
-    OLD_IMAGE="${!OLD_IMAGE_VAR%:*}"
-    eval "$OLD_IMAGE_VAR"="$LOCAL_IMAGE"
-    export "${OLD_IMAGE_VAR?}"
-  done
-  # Assign images from local image registry after update image
-  # This allows to use cached images for faster downloads
-  for IMAGE_VAR in $(env | grep -v "_LOCAL_IMAGE=" | grep "_IMAGE=" | grep -o "^[^=]*") ; do
-    IMAGE=${!IMAGE_VAR}
-    #shellcheck disable=SC2086
-    IMAGE_NAME="${IMAGE##*/}"
-    LOCAL_IMAGE="${REGISTRY}/localimages/$IMAGE_NAME"
-    eval "$IMAGE_VAR"="$LOCAL_IMAGE"
-  done
-}
+
+
 
 #
-# Launch Ironic locally for Kind and Tilt, in cluster for Minikube
+# Launch Ironic in cluster
 #
 function launch_ironic() {
   pushd "${BMOPATH}"
@@ -271,37 +223,8 @@ function update_capm3_imports(){
   popd
 }
 
-#
-# Update the images for the CAPM3 deployment file to use local ones
-#
-function update_component_image(){
-  IMPORT=$1
-  ORIG_IMAGE=$2
-  # Split the image IMAGE_NAME AND IMAGE_TAG, if any tag exist
-  TMP_IMAGE="${ORIG_IMAGE##*/}"
-  TMP_IMAGE_NAME="${TMP_IMAGE%%:*}"
-  TMP_IMAGE_TAG="${TMP_IMAGE##*:}"
-  # Assign the image tag to latest if there is no tag in the image
-  if [ "${TMP_IMAGE_NAME}" == "${TMP_IMAGE_TAG}" ]; then
-    TMP_IMAGE_TAG="latest"
-  fi
 
-  if [ "${IMPORT}" == "BMO" ] && [ "${CAPM3_VERSION}" == "v1alpha4" ]; then
-    export MANIFEST_IMG_BMO="${REGISTRY}/localimages/$TMP_IMAGE_NAME"
-    export MANIFEST_TAG_BMO="$TMP_IMAGE_TAG"
-    make set-manifest-image-bmo
-  fi
 
-  if [ "${IMPORT}" == "CAPM3" ]; then
-    export MANIFEST_IMG="${REGISTRY}/localimages/${TMP_IMAGE_NAME}"
-    export MANIFEST_TAG="${TMP_IMAGE_TAG}"
-    make set-manifest-image
-  elif [ "${IMPORT}" == "IPAM" ]; then
-    export MANIFEST_IMG_IPAM="${REGISTRY}/localimages/$TMP_IMAGE_NAME"
-    export MANIFEST_TAG_IPAM="$TMP_IMAGE_TAG"
-    make set-manifest-image-ipam
-  fi
-}
 
 #
 # Update the clusterctl deployment files to use local repositories
