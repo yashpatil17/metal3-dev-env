@@ -152,7 +152,7 @@ EOF
   fi
 
   if [ "${EPHEMERAL_CLUSTER}" != "minikube" ]; then
-    update_images
+   # update_images
     ${RUN_LOCAL_IRONIC_SCRIPT}
   else
     # Deploy Ironic using deploy.sh script
