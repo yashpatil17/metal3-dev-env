@@ -53,8 +53,8 @@ prefixlen PROVISIONING_CIDR "$PROVISIONING_NETWORK"
 export PROVISIONING_CIDR
 export PROVISIONING_NETMASK=${PROVISIONING_NETMASK:-$(python -c "import ipaddress; print(ipaddress.ip_network(u\"$PROVISIONING_NETWORK\").netmask)")}
 
-network_address PROVISIONING_IP "$PROVISIONING_NETWORK" 1
-network_address CLUSTER_PROVISIONING_IP "$PROVISIONING_NETWORK" 2
+#network_address PROVISIONING_IP "$PROVISIONING_NETWORK" 1
+#network_address CLUSTER_PROVISIONING_IP "$PROVISIONING_NETWORK" 2
 
 export PROVISIONING_IP
 export CLUSTER_PROVISIONING_IP
@@ -110,12 +110,12 @@ fi
 
 
 
-if [[ -n "${EXTERNAL_SUBNET_V4}" ]]; then
+#if [[ -n "${EXTERNAL_SUBNET_V4}" ]]; then
   prefixlen EXTERNAL_SUBNET_V4_PREFIX "$EXTERNAL_SUBNET_V4"
-  export EXTERNAL_SUBNET_V4_PREFIX
-  if [[ -z "${EXTERNAL_SUBNET_V4_HOST:-}" ]]; then
-    network_address EXTERNAL_SUBNET_V4_HOST "$EXTERNAL_SUBNET_V4" 1
-  fi
+ # export EXTERNAL_SUBNET_V4_PREFIX
+ # if [[ -z "${EXTERNAL_SUBNET_V4_HOST:-}" ]]; then
+  #  network_address EXTERNAL_SUBNET_V4_HOST "$EXTERNAL_SUBNET_V4" 1
+ # fi
 
   # Calculate DHCP range for baremetal network (20 to 60 is the libvirt dhcp)
  # network_address VIRSH_DHCP_V4_START "$EXTERNAL_SUBNET_V4" 20
@@ -126,11 +126,11 @@ if [[ -n "${EXTERNAL_SUBNET_V4}" ]]; then
   export VIRSH_DHCP_V4_END
   export BAREMETALV4_POOL_RANGE_START
   export BAREMETALV4_POOL_RANGE_END
-else
-  export EXTERNAL_SUBNET_V4_PREFIX=""
-  export EXTERNAL_SUBNET_V4_HOST=""
-  export BAREMETALV4_POOL_RANGE_START=""
-  export BAREMETALV4_POOL_RANGE_END=""
+#else
+ # export EXTERNAL_SUBNET_V4_PREFIX=""
+  #export EXTERNAL_SUBNET_V4_HOST=""
+  #export BAREMETALV4_POOL_RANGE_START=""
+  #export BAREMETALV4_POOL_RANGE_END=""
 fi
 
 if [[ -n "${EXTERNAL_SUBNET_V6}" ]]; then
