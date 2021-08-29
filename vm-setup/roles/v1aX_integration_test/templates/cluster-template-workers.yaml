@@ -78,18 +78,18 @@ spec:
     links:
       ethernets:
         - type: phy
-          id: enp1s0
+          id: ens3
           macAddress:
-            fromHostInterface: enp1s0
+            fromHostInterface: ens3
         - type: phy
-          id: enp2s0
+          id: ens4
           macAddress:
-            fromHostInterface: enp2s0
+            fromHostInterface: ens4
     networks:
 {% if IP_STACK == 'v4' or IP_STACK == 'v4v6' %}
       ipv4:
         - id: baremetalv4
-          link: enp2s0
+          link: ens4
           ipAddressFromIPPool: baremetalv4-pool
           routes:
             - network: 0.0.0.0
@@ -100,7 +100,7 @@ spec:
 {% if IP_STACK == 'v6' or IP_STACK == 'v4v6'%}
       ipv6:
         - id: baremetalv6
-          link: enp2s0
+          link: ens4
           ipAddressFromIPPool: baremetalv6-pool
           routes:
             - network: 0::0
