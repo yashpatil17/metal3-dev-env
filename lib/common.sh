@@ -9,17 +9,8 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 USER="$(whoami)"
 export USER=${USER}
 
-# Get variables from the config file
-if [ -z "${CONFIG:-}" ]; then
-    # See if there's a config_$USER.sh in the SCRIPTDIR
-    if [ ! -f "${SCRIPTDIR}/config_${USER}.sh" ]; then
-        cp "${SCRIPTDIR}/config_example.sh" "${SCRIPTDIR}/config_${USER}.sh"
-        echo "Automatically created config_${USER}.sh with default contents."
-    fi
-    CONFIG="${SCRIPTDIR}/config_${USER}.sh"
-fi
 # shellcheck disable=SC1090
-source "$CONFIG"
+source config.sh
 
 # Set variables
 export MARIADB_HOST="mariaDB"
@@ -37,8 +28,8 @@ MANAGE_PRO_BRIDGE=${MANAGE_PRO_BRIDGE:-y}
 MANAGE_INT_BRIDGE=${MANAGE_INT_BRIDGE:-y}
 # Internal interface, to bridge virbr0
 INT_IF=${INT_IF:-}
-# Root disk to deploy coreOS - use /dev/sda on BM
-ROOT_DISK_NAME=${ROOT_DISK_NAME-"/dev/sda"}
+# Root disk to deploy coreOS - use /dev/vda on BM
+ROOT_DISK_NAME=${ROOT_DISK_NAME-"/dev/vda"}
 # Hostname format
 NODE_HOSTNAME_FORMAT=${NODE_HOSTNAME_FORMAT:-"node-%d"}
 # Check OS type and version
@@ -55,20 +46,8 @@ if [[ ! "${SUPPORTED_DISTROS[*]}" =~ $DISTRO ]]; then
 fi
 
 # Container runtime
-if [[ "${OS}" == ubuntu ]]; then
-  export CONTAINER_RUNTIME=${CONTAINER_RUNTIME:-"docker"}
-else
-  export CONTAINER_RUNTIME=${CONTAINER_RUNTIME:-"podman"}
-fi
-# Pod names
-if [[ "${CONTAINER_RUNTIME}" == "podman" ]]; then
-  export POD_NAME="--pod ironic-pod"
-  export POD_NAME_INFRA="--pod infra-pod"
-else
-  export POD_NAME=""
-  export POD_NAME_INFRA=""
-fi
 
+export CONTAINER_RUNTIME=${CONTAINER_RUNTIME:-"docker"}
 export SSH_KEY=${SSH_KEY:-"${HOME}/.ssh/id_rsa"}
 export SSH_PUB_KEY=${SSH_PUB_KEY:-"${SSH_KEY}.pub"}
 # Generate user ssh key
@@ -128,7 +107,7 @@ else
   CAPM3BRANCH="${CAPM3BRANCH:-master}"
 fi
 
-BMOREPO="${BMOREPO:-https://github.com/metal3-io/baremetal-operator.git}"
+BMOREPO="${BMOREPO:-https://github.com/shweta50/baremetal-operator.git}"
 BMOBRANCH="${BMOBRANCH:-master}"
 FORCE_REPO_UPDATE="${FORCE_REPO_UPDATE:-true}"
 
@@ -138,6 +117,7 @@ CAPM3_RUN_LOCAL="${CAPM3_RUN_LOCAL:-false}"
 WORKING_DIR=${WORKING_DIR:-"/opt/metal3-dev-env"}
 NODES_FILE=${NODES_FILE:-"${WORKING_DIR}/ironic_nodes.json"}
 NODES_PLATFORM=${NODES_PLATFORM:-"libvirt"}
+#NODES_PLATFORM=${NODES_PLATFORM:-"openstack"}
 
 # Metal3
 export NAMESPACE=${NAMESPACE:-"metal3"}
@@ -151,17 +131,17 @@ export NODE_DRAIN_TIMEOUT=${NODE_DRAIN_TIMEOUT:-"0s"}
 export MAX_SURGE_VALUE="${MAX_SURGE_VALUE:-"1"}"
 
 # Docker registry for local images
-export DOCKER_REGISTRY_IMAGE=${DOCKER_REGISTRY_IMAGE:-"docker.io/registry:latest"}
+#export DOCKER_REGISTRY_IMAGE=${DOCKER_REGISTRY_IMAGE:-"docker.io/registry:latest"}
 
 # VBMC and Redfish images
 export VBMC_IMAGE=${VBMC_IMAGE:-"quay.io/metal3-io/vbmc"}
-export SUSHY_TOOLS_IMAGE=${SUSHY_TOOLS_IMAGE:-"quay.io/metal3-io/sushy-tools"}
+#export SUSHY_TOOLS_IMAGE=${SUSHY_TOOLS_IMAGE:-"quay.io/metal3-io/sushy-tools"}
 
 # Ironic vars
 export IRONIC_TLS_SETUP=${IRONIC_TLS_SETUP:-"true"}
 export IRONIC_BASIC_AUTH=${IRONIC_BASIC_AUTH:-"true"}
 export IPA_DOWNLOADER_IMAGE=${IPA_DOWNLOADER_IMAGE:-"quay.io/metal3-io/ironic-ipa-downloader"}
-export IRONIC_IMAGE=${IRONIC_IMAGE:-"quay.io/metal3-io/ironic"}
+export IRONIC_IMAGE=${IRONIC_IMAGE:-"quay.io/shweta50/metalkube_ironic"}
 export IRONIC_CLIENT_IMAGE=${IRONIC_CLIENT_IMAGE:-"quay.io/metal3-io/ironic-client"}
 export IRONIC_DATA_DIR="$WORKING_DIR/ironic"
 export IRONIC_IMAGE_DIR="$IRONIC_DATA_DIR/html/images"
@@ -179,7 +159,7 @@ fi
 export RESTART_CONTAINER_CERTIFICATE_UPDATED=${RESTART_CONTAINER_CERTIFICATE_UPDATED:-${IRONIC_TLS_SETUP}}
 
 # Baremetal operator image
-export BAREMETAL_OPERATOR_IMAGE=${BAREMETAL_OPERATOR_IMAGE:-"quay.io/metal3-io/baremetal-operator"}
+export BAREMETAL_OPERATOR_IMAGE=${BAREMETAL_OPERATOR_IMAGE:-"quay.io/shweta50/bmo"}
 
 # Config for OpenStack CLI
 export OPENSTACK_CONFIG=$HOME/.config/openstack/clouds.yaml
@@ -194,32 +174,18 @@ else
 fi
 
 # Default hosts memory
-export DEFAULT_HOSTS_MEMORY=${DEFAULT_HOSTS_MEMORY:-4096}
+#export DEFAULT_HOSTS_MEMORY=${DEFAULT_HOSTS_MEMORY:-4096}
 
 # Cluster
 export CLUSTER_NAME=${CLUSTER_NAME:-"test1"}
-export CLUSTER_APIENDPOINT_IP=${CLUSTER_APIENDPOINT_IP:-"192.168.111.249"}
+export CLUSTER_APIENDPOINT_IP="${CLUSTER_APIENDPOINT_IP:-${CLUSTER_APIENDPOINT_IP}}"
 export KUBERNETES_VERSION=${KUBERNETES_VERSION:-"v1.21.2"}
+export UPGRADED_K8S_VERSION=${UPGRADED_K8S_VERSION:-"v1.21.2"}
 export KUBERNETES_BINARIES_VERSION="${KUBERNETES_BINARIES_VERSION:-${KUBERNETES_VERSION}}"
 export KUBERNETES_BINARIES_CONFIG_VERSION=${KUBERNETES_BINARIES_CONFIG_VERSION:-"v0.2.7"}
 
-# Ephemeral Cluster
-if [ "${CONTAINER_RUNTIME}" == "docker" ]; then
-  export EPHEMERAL_CLUSTER=${EPHEMERAL_CLUSTER:-"kind"}
-else
-  echo "Management cluster forced to be minikube when container runtime is not docker"
-  export EPHEMERAL_CLUSTER="minikube"
-fi
-
 # Kustomize version
 export KUSTOMIZE_VERSION=${KUSTOMIZE_VERSION:-"v4.1.3"}
-
-# Kind version (if EPHEMERAL_CLUSTER=kind)
-export KIND_VERSION=${KIND_VERSION:-"v0.11.1"}
-export KIND_NODE_IMAGE_VERSION=${KIND_NODE_IMAGE_VERSION:-"v1.21.2"}
-
-# Minikube version (if EPHEMERAL_CLUSTER=minikube)
-export MINIKUBE_VERSION=${MINIKUBE_VERSION:-"v1.22.0"}
 
 # Ansible version
 export ANSIBLE_VERSION=${ANSIBLE_VERSION:-"4.3.0"}
@@ -243,18 +209,8 @@ fi
 
 # Verify requisites/permissions
 # Connect to system libvirt
-export LIBVIRT_DEFAULT_URI=qemu:///system
-if [ "$USER" != "root" ] && [ "${XDG_RUNTIME_DIR:-}" == "/run/user/0" ] ; then
-    echo "Please use a non-root user, WITH a login shell (e.g. su - USER)"
-    exit 1
-fi
-
+#export LIBVIRT_DEFAULT_URI=qemu:///system
 # Check if sudo privileges without password
-if ! sudo -n uptime &> /dev/null ; then
-  echo "sudo without password is required"
-  exit 1
-fi
-
 # Use firewalld on CentOS/RHEL, iptables everywhere else
 export USE_FIREWALLD=False
 if [[ $DISTRO == "rhel8" || $DISTRO == "centos8" ]]; then
@@ -405,7 +361,6 @@ differs(){
   fi
   return $RET_CODE
 }
-
 #
 # Kill and remove the infra containers
 #
