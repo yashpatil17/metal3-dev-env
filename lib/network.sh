@@ -77,10 +77,10 @@ fi
 export CLUSTER_APIENDPOINT_PORT=${CLUSTER_APIENDPOINT_PORT:-"6443"}
 
 # Calculate DHCP range
-network_address dhcp_range_start "$PROVISIONING_NETWORK" 10
-network_address dhcp_range_end "$PROVISIONING_NETWORK" 100
-network_address PROVISIONING_POOL_RANGE_START "$PROVISIONING_NETWORK" 100
-network_address PROVISIONING_POOL_RANGE_END "$PROVISIONING_NETWORK" 200
+#network_address dhcp_range_start "$PROVISIONING_NETWORK" 10
+#network_address dhcp_range_end "$PROVISIONING_NETWORK" 100
+#network_address PROVISIONING_POOL_RANGE_START "$PROVISIONING_NETWORK" 100
+#network_address PROVISIONING_POOL_RANGE_END "$PROVISIONING_NETWORK" 200
 
 export PROVISIONING_POOL_RANGE_START
 export PROVISIONING_POOL_RANGE_END
@@ -108,9 +108,7 @@ else
     exit 1
 fi
 
-if [[ "${EPHEMERAL_CLUSTER}" == "minikube" ]] && [[ -n "${EXTERNAL_SUBNET_V6}" ]]; then
-    network_address MINIKUBE_BMNET_V6_IP "${EXTERNAL_SUBNET_V6}" 9
-fi
+
 
 if [[ -n "${EXTERNAL_SUBNET_V4}" ]]; then
   prefixlen EXTERNAL_SUBNET_V4_PREFIX "$EXTERNAL_SUBNET_V4"
@@ -120,10 +118,10 @@ if [[ -n "${EXTERNAL_SUBNET_V4}" ]]; then
   fi
 
   # Calculate DHCP range for baremetal network (20 to 60 is the libvirt dhcp)
-  network_address VIRSH_DHCP_V4_START "$EXTERNAL_SUBNET_V4" 20
-  network_address VIRSH_DHCP_V4_END "$EXTERNAL_SUBNET_V4" 60
-  network_address BAREMETALV4_POOL_RANGE_START "$EXTERNAL_SUBNET_V4" 100
-  network_address BAREMETALV4_POOL_RANGE_END "$EXTERNAL_SUBNET_V4" 200
+ # network_address VIRSH_DHCP_V4_START "$EXTERNAL_SUBNET_V4" 20
+ # network_address VIRSH_DHCP_V4_END "$EXTERNAL_SUBNET_V4" 60
+ # network_address BAREMETALV4_POOL_RANGE_START "$EXTERNAL_SUBNET_V4" 100
+ # network_address BAREMETALV4_POOL_RANGE_END "$EXTERNAL_SUBNET_V4" 200
   export VIRSH_DHCP_V4_START
   export VIRSH_DHCP_V4_END
   export BAREMETALV4_POOL_RANGE_START
@@ -143,10 +141,10 @@ if [[ -n "${EXTERNAL_SUBNET_V6}" ]]; then
   fi
 
   # Calculate DHCP range for baremetal network (20 to 60 is the libvirt dhcp) IPv6
-  network_address VIRSH_DHCP_V6_START "$EXTERNAL_SUBNET_V6" 20
-  network_address VIRSH_DHCP_V6_END "$EXTERNAL_SUBNET_V6" 60
-  network_address BAREMETALV6_POOL_RANGE_START "$EXTERNAL_SUBNET_V6" 100
-  network_address BAREMETALV6_POOL_RANGE_END "$EXTERNAL_SUBNET_V6" 200
+  #network_address VIRSH_DHCP_V6_START "$EXTERNAL_SUBNET_V6" 20
+  #network_address VIRSH_DHCP_V6_END "$EXTERNAL_SUBNET_V6" 60
+  #network_address BAREMETALV6_POOL_RANGE_START "$EXTERNAL_SUBNET_V6" 100
+  #network_address BAREMETALV6_POOL_RANGE_END "$EXTERNAL_SUBNET_V6" 200
   export VIRSH_DHCP_V6_START
   export VIRSH_DHCP_V6_END
   export BAREMETALV6_POOL_RANGE_START
