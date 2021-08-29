@@ -72,7 +72,7 @@ function launch_baremetal_operator() {
 
   # Update container images to use local ones
   cp "${BMOPATH}/config/manager/manager.yaml" "${BMOPATH}/config/manager/manager.yaml.orig"
-  update_kustomization_images "${BMOPATH}/config/manager/manager.yaml"
+  #update_kustomization_images "${BMOPATH}/config/manager/manager.yaml"
 
   # Update Configmap parameters with correct urls
   cp "${BMOPATH}/config/default/ironic.env" "${BMOPATH}/config/default/ironic.env.orig"
