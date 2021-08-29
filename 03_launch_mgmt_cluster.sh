@@ -1,6 +1,5 @@
 #!/bin/bash
 set -xe
-
 # shellcheck disable=SC1091
 source lib/logging.sh
 # shellcheck disable=SC1091
@@ -110,6 +109,10 @@ EOF
   # Deploy. Args: <deploy-BMO> <deploy-Ironic> <deploy-TLS> <deploy-Basic-Auth> <deploy-Keepalived>
   "${BMOPATH}/tools/deploy.sh" true false "${IRONIC_TLS_SETUP}" "${IRONIC_BASIC_AUTH}" true
 
+  # Restore original files
+  mv "${BMOPATH}/config/default/ironic.env.orig" "${BMOPATH}/config/default/ironic.env"
+  mv "${BMOPATH}/config/manager/manager.yaml.orig" "${BMOPATH}/config/manager/manager.yaml"
+
   # If BMO should run locally, scale down the deployment and run BMO
   if [ "${BMO_RUN_LOCAL}" == "true" ]; then
     if [ "${IRONIC_TLS_SETUP}" == "true" ]; then
@@ -188,7 +191,7 @@ DEPLOY_RAMDISK_URL=${DEPLOY_RAMDISK_URL}
 IRONIC_ENDPOINT=${IRONIC_URL}
 IRONIC_INSPECTOR_ENDPOINT=${IRONIC_INSPECTOR_URL}
 CACHEURL=http://${PROVISIONING_URL_HOST}/images
-IRONIC_FAST_TRACK=true
+#IRONIC_FAST_TRACK=true
 RESTART_CONTAINER_CERTIFICATE_UPDATED="${RESTART_CONTAINER_CERTIFICATE_UPDATED}"
 EOF
 
@@ -230,34 +233,7 @@ EOF
 
 #
 # Create the BMH CRs
-#
-function make_bm_hosts() {
-  while read -r name address user password mac; do
-    go run "${BMOPATH}"/cmd/make-bm-worker/main.go \
-      -address "$address" \
-      -password "$password" \
-      -user "$user" \
-      -boot-mac "$mac" \
-      -boot-mode "legacy" \
-      "$name"
-  done
-}
 
-#
-# Apply the BMH CRs
-#
-function apply_bm_hosts() {
-  pushd "${BMOPATH}"
-  list_nodes | make_bm_hosts > "${WORKING_DIR}/bmhosts_crs.yaml"
-  if [[ -n "$(list_nodes)" ]]; then
-    echo "bmhosts_crs.yaml is applying"
-    while ! kubectl apply -f "${WORKING_DIR}/bmhosts_crs.yaml" -n metal3 &>/dev/null; do
-	    sleep 3
-    done
-    echo "bmhosts_crs.yaml is successfully applied"
-  fi
-  popd
-}
 
 # --------------------------
 # CAPM3 deployment functions
@@ -334,15 +310,6 @@ function patch_clusterctl(){
   pushd "${CAPM3PATH}"
   mkdir -p "${HOME}"/.cluster-api
   touch "${HOME}"/.cluster-api/clusterctl.yaml
-  
-  ## Remove these lines
-  ## This is hard-coded until we fix the issue with v1.5.0
-  cat << EOF | sudo tee "${HOME}/.cluster-api/clusterctl.yaml"
-cert-manager:
-  version: "v1.4.0" 
-EOF
-  
-  
 
   # At this point the images variables have been updated with update_images
   # Reflect the change in components files
@@ -434,64 +401,16 @@ function create_clouds_yaml() {
 # ------------------------
 # Management cluster infra
 # ------------------------
-
-#
-# Start a KinD management cluster
-#
-function launch_kind() {
-  cat <<EOF | sudo su -l -c "kind create cluster --name kind --image=kindest/node:${KIND_NODE_IMAGE_VERSION} --config=- " "$USER"
-  kind: Cluster
-  apiVersion: kind.x-k8s.io/v1alpha4
-  containerdConfigPatches:
-  - |-
-    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."${REGISTRY}"]
-      endpoint = ["http://${REGISTRY}"]
-EOF
-}
-
-#
-# Create a management cluster
-#
-function start_management_cluster () {
-  if [ "${EPHEMERAL_CLUSTER}" == "kind" ]; then
-    launch_kind
-  elif [ "${EPHEMERAL_CLUSTER}" == "minikube" ]; then
-    sudo systemctl restart libvirtd.service
-    sudo su -l -c 'minikube start' "${USER}"
-    if [[ -n "${MINIKUBE_BMNET_V6_IP}" ]]; then
-      sudo su -l -c "minikube ssh -- sudo sysctl -w net.ipv6.conf.all.disable_ipv6=0" "${USER}"
-      sudo su -l -c "minikube ssh -- sudo ip addr add $MINIKUBE_BMNET_V6_IP/64 dev eth3" "${USER}"
-    fi
-    if [[ "${PROVISIONING_IPV6}" == "true" ]]; then
-      sudo su -l -c 'minikube ssh "sudo ip -6 addr add '"$CLUSTER_PROVISIONING_IP/$PROVISIONING_CIDR"' dev eth2"' "${USER}"
-    else
-      sudo su -l -c "minikube ssh sudo brctl addbr $CLUSTER_PROVISIONING_INTERFACE" "${USER}"
-      sudo su -l -c "minikube ssh sudo ip link set $CLUSTER_PROVISIONING_INTERFACE up" "${USER}"
-      sudo su -l -c "minikube ssh sudo brctl addif $CLUSTER_PROVISIONING_INTERFACE eth2" "${USER}"
-      sudo su -l -c "minikube ssh sudo ip addr add $INITIAL_IRONICBRIDGE_IP/$PROVISIONING_CIDR dev $CLUSTER_PROVISIONING_INTERFACE" "${USER}"
-    fi
-  fi
-}
-
-# -----------------------------
-# Deploy the management cluster
-# -----------------------------
-
 clone_repos
 
 # Kill and remove the running ironic containers
 "$BMOPATH"/tools/remove_local_ironic.sh
 
 create_clouds_yaml
-if [ "${EPHEMERAL_CLUSTER}" != "tilt" ]; then
-  start_management_cluster
-  kubectl create namespace metal3
-fi
 
-if [ "${EPHEMERAL_CLUSTER}" != "tilt" ]; then
-  patch_clusterctl
-  launch_cluster_api_provider_metal3
-fi
+patch_clusterctl
+launch_cluster_api_provider_metal3
+
 
 if [ "${CAPM3_VERSION}" != "v1alpha4" ]; then 
   launch_baremetal_operator
@@ -499,22 +418,4 @@ fi
 
 launch_ironic
 
-if [ "${EPHEMERAL_CLUSTER}" != "tilt" ]; then
-  if [ "${CAPM3_VERSION}" == "v1alpha4" ]; then
-    BMO_NAME_PREFIX="${NAMEPREFIX}-baremetal-operator"
-  else
-    BMO_NAME_PREFIX="${NAMEPREFIX}"
-  fi
-
-  if [[ "${BMO_RUN_LOCAL}" != true ]]; then
-    if ! kubectl rollout status deployment "${BMO_NAME_PREFIX}"-controller-manager -n "${IRONIC_NAMESPACE}" --timeout=5m; then
-      echo "baremetal-operator-controller-manager deployment can not be rollout"
-      exit 1
-    fi
-  else
-    # There is no certificate to run validation webhook on local.
-    # Thus we are deleting validatingwebhookconfiguration resource if exists to let BMO is working properly on local runs.
-    kubectl delete validatingwebhookconfiguration/"${BMO_NAME_PREFIX}"-validating-webhook-configuration --ignore-not-found=true
-  fi
-  apply_bm_hosts
-fi
+BMO_NAME_PREFIX="${NAMEPREFIX}"
