@@ -236,25 +236,26 @@ function patch_clusterctl(){
 
   # At this point the images variables have been updated with update_images
   # Reflect the change in components files
-  if [ -n "${CAPM3_LOCAL_IMAGE}" ]; then
-    update_component_image CAPM3 "${CAPM3_LOCAL_IMAGE}"
-  else
-    update_component_image CAPM3 "${CAPM3_IMAGE}"
-  fi
+ 
+ #if [ -n "${CAPM3_LOCAL_IMAGE}" ]; then
+  #  update_component_image CAPM3 "${CAPM3_LOCAL_IMAGE}"
+  #else
+  #  update_component_image CAPM3 "${CAPM3_IMAGE}"
+  #fi
 
-  if  [ "${CAPM3_VERSION}" == "v1alpha4" ]; then
-    if [ -n "${BAREMETAL_OPERATOR_LOCAL_IMAGE}" ]; then
-      update_component_image BMO "${BAREMETAL_OPERATOR_LOCAL_IMAGE}"
-    else
-      update_component_image BMO "${BAREMETAL_OPERATOR_IMAGE}"
-    fi
-  fi
+  #if  [ "${CAPM3_VERSION}" == "v1alpha4" ]; then
+   # if [ -n "${BAREMETAL_OPERATOR_LOCAL_IMAGE}" ]; then
+    #  update_component_image BMO "${BAREMETAL_OPERATOR_LOCAL_IMAGE}"
+    #else
+     # update_component_image BMO "${BAREMETAL_OPERATOR_IMAGE}"
+   # fi
+  #fi
 
-  if [ -n "${IPAM_LOCAL_IMAGE}" ]; then
-    update_component_image IPAM "${IPAM_LOCAL_IMAGE}"
-  else
-    update_component_image IPAM "${IPAM_IMAGE}"
-  fi
+  #if [ -n "${IPAM_LOCAL_IMAGE}" ]; then
+   # update_component_image IPAM "${IPAM_LOCAL_IMAGE}"
+  #else
+   # update_component_image IPAM "${IPAM_IMAGE}"
+  #fi
 
   update_capm3_imports
   make release-manifests
