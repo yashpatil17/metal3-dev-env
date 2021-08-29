@@ -325,6 +325,7 @@ function create_clouds_yaml() {
 # ------------------------
 # Management cluster infra
 # ------------------------
+kubectl create namespace metal3
 clone_repos
 
 # Kill and remove the running ironic containers
