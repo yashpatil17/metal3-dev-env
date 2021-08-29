@@ -10,7 +10,7 @@ USER="$(whoami)"
 export USER=${USER}
 
 # shellcheck disable=SC1090
-source config.sh
+source /home/ubuntu/metal3-dev-env/config.sh
 
 # Set variables
 export MARIADB_HOST="mariaDB"
