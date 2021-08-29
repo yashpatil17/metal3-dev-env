@@ -151,17 +151,17 @@ EOF
     echo "IRONIC_KERNEL_PARAMS=console=ttyS0" | sudo tee -a "$IRONIC_DATA_DIR/ironic_bmo_configmap.env"
   fi
 
-  if [ "${EPHEMERAL_CLUSTER}" != "minikube" ]; then
+ # if [ "${EPHEMERAL_CLUSTER}" != "minikube" ]; then
    # update_images
-    ${RUN_LOCAL_IRONIC_SCRIPT}
-  else
+  #  ${RUN_LOCAL_IRONIC_SCRIPT}
+  #else
     # Deploy Ironic using deploy.sh script
 
     # Update container images to use local ones
     cp "${BMOPATH}/ironic-deployment/ironic/ironic.yaml" "${BMOPATH}/ironic-deployment/ironic/ironic.yaml.orig"
     cp "${BMOPATH}/ironic-deployment/keepalived/keepalived_patch.yaml" "${BMOPATH}/ironic-deployment/keepalived/keepalived_patch.yaml.orig"
-    update_kustomization_images "${BMOPATH}/ironic-deployment/ironic/ironic.yaml"
-    update_kustomization_images "${BMOPATH}/ironic-deployment/keepalived/keepalived_patch.yaml"
+   # update_kustomization_images "${BMOPATH}/ironic-deployment/ironic/ironic.yaml"
+    #update_kustomization_images "${BMOPATH}/ironic-deployment/keepalived/keepalived_patch.yaml"
 
     # Copy the generated configmap for ironic deployment
     cp "$IRONIC_DATA_DIR/ironic_bmo_configmap.env"  "${BMOPATH}/ironic-deployment/keepalived/ironic_bmo_configmap.env"
@@ -172,7 +172,7 @@ EOF
     # Restore original files
     mv "${BMOPATH}/ironic-deployment/ironic/ironic.yaml.orig" "${BMOPATH}/ironic-deployment/ironic/ironic.yaml"
     mv "${BMOPATH}/ironic-deployment/keepalived/keepalived_patch.yaml.orig" "${BMOPATH}/ironic-deployment/keepalived/keepalived_patch.yaml"
-  fi
+  #fi
   
   # Restore original files
   mv "${BMOPATH}/ironic-deployment/keepalived/ironic_bmo_configmap.env.orig" "${BMOPATH}/ironic-deployment/keepalived/ironic_bmo_configmap.env"
