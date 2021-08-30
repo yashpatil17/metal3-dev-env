@@ -79,7 +79,7 @@
       block: |
           # for indentation
                       - name: IP_AUTODETECTION_METHOD
-                        value: "interface=ens4"
+                        value: "interface=ens3"
     when:
       IMAGE_OS == "Ubuntu"
 
