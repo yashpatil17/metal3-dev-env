@@ -107,7 +107,7 @@ else
   CAPM3BRANCH="${CAPM3BRANCH:-master}"
 fi
 
-BMOREPO="${BMOREPO:-https://github.com/shweta50/baremetal-operator.git}"
+BMOREPO="${BMOREPO:-https://github.com/yashpatil17/baremetal-operator.git}"
 BMOBRANCH="${BMOBRANCH:-master}"
 FORCE_REPO_UPDATE="${FORCE_REPO_UPDATE:-true}"
 
