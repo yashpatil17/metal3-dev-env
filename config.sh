@@ -3,8 +3,8 @@ export NAMESPACE=metal3
 export SERVICE_CIDR="192.169.0.0/18"
 export POD_CIDR="192.168.0.0/18"
 export API_ENDPOINT_PORT=6443
-export PROVISIONING_POOL_RANGE_START=172.22.0.101
-export PROVISIONING_POOL_RANGE_END=172.22.0.180
+export PROVISIONING_POOL_RANGE_START=172.22.1.101
+export PROVISIONING_POOL_RANGE_END=172.22.1.180
 export PROVISIONING_CIDR=172.22.0.0/24
 
 export BAREMETALV4_POOL_RANGE_START=172.20.17.100  
@@ -20,11 +20,11 @@ export KUBERNETES_VERSION=v1.22.0
 export IMAGE_BASE_NAME=UBUNTU_20.04_NODE_IMAGE_K8S_v1.22.0
 export IMAGE_NAME=UBUNTU_20.04_NODE_IMAGE_K8S_v1.22.0.qcow2
 export IMAGE_SUFFIX=qcow2
-export IMAGE_URL=http://172.22.0.108/images/UBUNTU_20.04_NODE_IMAGE_K8S_v1.22.0.qcow2 
+export IMAGE_URL=http://172.22.1.139/images/UBUNTU_20.04_NODE_IMAGE_K8S_v1.22.0.qcow2 
 export IMAGE_RAW_NAME=UBUNTU_20.04_NODE_IMAGE_K8S_v1.22.0-raw.img
-export IMAGE_RAW_URL=http://172.22.0.108/images/UBUNTU_20.04_NODE_IMAGE_K8S_v1.22.0-raw.img
-export IMAGE_RAW_CHECKSUM=http://172.22.0.108/images/UBUNTU_20.04_NODE_IMAGE_K8S_v1.22.0-raw.img.md5sum
-export IMAGE_CHECKSUM=http://172.22.0.108/images/UBUNTU_20.04_NODE_IMAGE_K8S_v1.22.0.qcow2.md5sum
+export IMAGE_RAW_URL=http://172.22.1.139/images/UBUNTU_20.04_NODE_IMAGE_K8S_v1.22.0-raw.img
+export IMAGE_RAW_CHECKSUM=http://172.22.1.139/images/UBUNTU_20.04_NODE_IMAGE_K8S_v1.22.0-raw.img.md5sum
+export IMAGE_CHECKSUM=http://172.22.1.139/images/UBUNTU_20.04_NODE_IMAGE_K8S_v1.22.0.qcow2.md5sum
 #export IMAGE_LOCATION=https://artifactory.nordix.org/artifactory/airship/images/k8s_${KUBERNETES_VERSION}/} //modify this if you are not using default image 
 export IMAGE_CHECKSUM_TYPE='md5'
 export IMAGE_FORMAT='raw'   #can be qcow2,raw,vdi,vmdk,live-iso. Deafult is raw.
@@ -33,17 +33,17 @@ export IMAGE_USERNAME=metal3    #username to be used to ssh to baremetal nodes.
 export VM_EXTRADISKS=false
 
 export BMO_RUN_LOCAL="false"
-export IRONIC_IMAGE="quay.io/shweta50/metalkube_ironic"
+export IRONIC_IMAGE="quay.io/shwetachavan/ironic-image"
 export CLUSTER_PROVISIONING_INTERFACE="ironicendpoint"
 
 
 
 export NUM_OF_WORKER_REPLICAS=1
-export IRONIC_HOST_IP=172.22.0.108
-export DEPLOY_KERNEL_URL=http://172.22.0.108:6180/images/ironic-python-agent.kernel
-export DEPLOY_RAMDISK_URL=http://172.22.0.108:6180/images/ironic-python-agent.initramfs
-export IRONIC_INSPECTOR_URL=https://172.22.0.108:5050/v1/
-export IRONIC_URL=https://172.22.0.108:6385/v1/
+export IRONIC_HOST_IP=172.22.1.139
+export DEPLOY_KERNEL_URL=https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-master.kernel
+export DEPLOY_RAMDISK_URL=https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-master.initramfs
+export IRONIC_INSPECTOR_URL=https://172.22.1.139:5050/v1/
+export IRONIC_URL=https://172.22.1.139:6385/v1/
 export WORKING_DIR=/opt/metal3-dev-env
 
 #basic tls and auth related variables
@@ -53,17 +53,17 @@ export MARIADB_HOST=mariaDB
 export IRONIC_TLS_SETUP=true
 export IRONIC_BASIC_AUTH=true
 
-export PROVISIONING_URL_HOST=172.22.0.108
-export CLUSTER_URL_HOST=172.22.0.108
-export IRONIC_HOST=172.22.0.108
-export IRONIC_HOST_IP=172.22.0.108
+export PROVISIONING_URL_HOST=172.22.1.139
+export CLUSTER_URL_HOST=172.22.1.139
+export IRONIC_HOST=172.22.1.139
+export IRONIC_HOST_IP=172.22.1.139
 export WORKING_DIR=/opt/metal3-dev-env
 export IRONIC_DATA_DIR=/opt/metal3-dev-env/ironic
-export IRONIC_URL=https://172.22.0.108:6385/v1/
+export IRONIC_URL=https://172.22.1.139:6385/v1/
 
 
 export IRONIC_IMAGE_DIR=/opt/metal3-dev-env/ironic/html/images
-export CLUSTER_PROVISIONING_IP=172.22.0.108
+export CLUSTER_PROVISIONING_IP=172.22.1.139
 
 
 #Authentication related variables 
@@ -102,14 +102,14 @@ export BMC_DRIVER="mixed"
 
 export CONTAINER_RUNTIME=docker
 export M3PATH=/home/ubuntu/go/src/github.com/metal3-io
-export PROVISIONING_IP=172.22.0.108
-export CLUSTER_PROVISIONING_IP=172.22.0.108
+export PROVISIONING_IP=172.22.1.139
+export CLUSTER_PROVISIONING_IP=172.22.1.139
 export CLUSTER_APIENDPOINT_IP=172.20.16.249
 export CLUSTER_DHCP_RANGE=172.22.0.190,172.22.0.200
 export BMOPATH=/home/ubuntu/go/src/github.com/metal3-io/baremetal-operator
 
-export IRONIC_ENDPOINT=https://172.22.0.108:6385/v1/
-export IRONIC_INSPECTOR_ENDPOINT=https://172.22.0.108:5050/v1/
+export IRONIC_ENDPOINT=https://172.22.1.139:6385/v1/
+export IRONIC_INSPECTOR_ENDPOINT=https://172.22.1.139:5050/v1/
 export CONTAINER_RUNTIME=docker
 
 
@@ -138,7 +138,7 @@ export IPA_DOWNLOADER_IMAGE=quay.io/metal3-io/ironic-ipa-downloader
 export IRONIC_CLIENT_IMAGE=quay.io/metal3-io/ironic-client
 
 export IRONIC_NAMESPACE=capm3-system
-export BAREMETAL_OPERATOR_IMAGE=quay.io/shweta50/bmo 
+export BAREMETAL_OPERATOR_IMAGE=quay.io/shwetachavan/baremetal-operator 
 export OPENSTACK_CONFIG=/home/ubuntu/.config/openstack/clouds.yaml
 
 export CAPM3_VERSION="v1alpha5"

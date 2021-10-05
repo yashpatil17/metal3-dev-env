@@ -170,8 +170,8 @@ fi
 
 network_address INITIAL_IRONICBRIDGE_IP "$PROVISIONING_NETWORK" 9
 
-export DEPLOY_KERNEL_URL=${DEPLOY_KERNEL_URL:-"http://${CLUSTER_URL_HOST}:${HTTP_PORT}/images/ironic-python-agent.kernel"}
-export DEPLOY_RAMDISK_URL=${DEPLOY_RAMDISK_URL:-"http://${CLUSTER_URL_HOST}:${HTTP_PORT}/images/ironic-python-agent.initramfs"}
+export DEPLOY_KERNEL_URL=${DEPLOY_KERNEL_URL:-"https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-master.kernel"}
+export DEPLOY_RAMDISK_URL=${DEPLOY_RAMDISK_URL:-"https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-master.initramfs"}
 if [ "${IRONIC_TLS_SETUP}" == "true" ]; then
   export IRONIC_URL=${IRONIC_URL:-"https://${CLUSTER_URL_HOST}:${IRONIC_API_PORT}/v1/"}
   export IRONIC_INSPECTOR_URL=${IRONIC_INSPECTOR_URL:-"https://${CLUSTER_URL_HOST}:${IRONIC_INSPECTOR_PORT}/v1/"}
