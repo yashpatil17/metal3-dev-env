@@ -44,8 +44,8 @@
         "port": "{{ node.virtualbmc_port }}",
         "address": "{{vm_driver_tmp}}://{{lvars['host_ip'] | ipwrap }}:{{node.virtualbmc_port}}",
         {% endif -%}
-        "deploy_kernel": "https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-master.kernel",
-        "deploy_ramdisk": "https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-master.initramfs"
+        "deploy_kernel": "https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-stable-wallaby.kernel",
+        "deploy_ramdisk": "https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-stable-wallaby.initramfs"
       },
       "ports": [{
         "address": "{{ node_mac_map.get(node.name).get(lvars['pxe_network']) }}",

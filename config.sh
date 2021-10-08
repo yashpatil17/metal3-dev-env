@@ -40,8 +40,8 @@ export CLUSTER_PROVISIONING_INTERFACE="ironicendpoint"
 
 export NUM_OF_WORKER_REPLICAS=1
 export IRONIC_HOST_IP=172.22.1.139
-export DEPLOY_KERNEL_URL=https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-master.kernel
-export DEPLOY_RAMDISK_URL=https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-master.initramfs
+export DEPLOY_KERNEL_URL=https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-stable-wallaby.kernel
+export DEPLOY_RAMDISK_URL=https://tarballs.opendev.org/openstack/ironic-python-agent/dib/files/ipa-centos8-stable-wallaby.initramfs
 export IRONIC_INSPECTOR_URL=https://172.22.1.139:5050/v1/
 export IRONIC_URL=https://172.22.1.139:6385/v1/
 export WORKING_DIR=/opt/metal3-dev-env
