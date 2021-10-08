@@ -33,7 +33,7 @@ export IMAGE_USERNAME=metal3    #username to be used to ssh to baremetal nodes.
 export VM_EXTRADISKS=false
 
 export BMO_RUN_LOCAL="false"
-export IRONIC_IMAGE="quay.io/shwetachavan/ironic-image"
+export IRONIC_IMAGE="quay.io/shwetachavan/ironic-image-1"
 export CLUSTER_PROVISIONING_INTERFACE="ironicendpoint"
 
 
