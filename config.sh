@@ -120,9 +120,13 @@ export METAL3_DIR=/home/ubuntu/metal3-dev-env
 
 
 #This SSH key will be automatically injected into the provisioned host
-export SSH_KEY=/home/ubuntu/.ssh/id_rsa
-export SSH_PUB_KEY=/home/ubuntu/.ssh/id_rsa.pub
-export IRONIC_RAMDISK_SSH_KEY=/home/ubuntu/.ssh/id_rsa.pub
+export SSH_KEY=~/.ssh/id_rsa
+export SSH_PUB_KEY=${SSH_KEY}.pub
+# Generate user ssh key
+if [ ! -f "${SSH_KEY}" ]; then
+  mkdir -p "$(dirname "$SSH_KEY")"
+  ssh-keygen -f "${SSH_KEY}" -P ""
+fi
 
 export IRONIC_FAST_TRACK="false"
 export IMAGE_OS=Ubuntu
@@ -152,5 +156,5 @@ export IRONIC_INSPECTOR_PORT=5050
 export IRONIC_API_PORT=6385
 export ROOT_DISK_NAME=/dev/vda
 
-
-export IRONIC_RAMDISK_SSH_KEY=/home/ubuntu/.ssh/id_rsa.pub
+export IRONIC_RAMDISK_SSH_KEY=$(cat $SSH_PUB_KEY)
+export PROVISIONING_INTERFACE=ironicendpoint
